@@ -65,6 +65,7 @@ function totalPriceFormatter(data) {
 }
 
 async function initTable() {
+  //TODO: This doesn't work. I don't know why.
   var csvUrl = "https://docs.google.com/spreadsheets/d/1FRonP_omhMxrO8Gp67uAEultrYdPQwk90W6LUzryP5s/gviz/tq?&tqx=out:csv";
   var csvData = await fetch(csvUrl, {
     method: 'GET',
