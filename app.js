@@ -64,61 +64,68 @@ function totalPriceFormatter(data) {
   }, 0)
 }
 
-async function initTable() {
+function initTable() {
   //TODO: This doesn't work. I don't know why.
-  var csvUrl = "https://docs.google.com/spreadsheets/d/1FRonP_omhMxrO8Gp67uAEultrYdPQwk90W6LUzryP5s/gviz/tq?&tqx=out:csv";
-  var csvData = await fetch(csvUrl, {
-    method: 'GET',
-    mode: 'no-cors'
-  });
-  var data = csv(csvData);
+  var csvUrl = "http://localhost:3000/csv";
+  var columns = [
+    {
+      field: 'officerName',
+      title: 'Officer Name'
+    },
+    {
+      field: 'agency',
+      title: 'Agency'
+    },
+    {
+      field: 'allegation',
+      title: 'Allegation'
+    },
+    {
+      field: 'lengthOfSanction(Months)',
+      title: 'Length of Sanction'
+    },
+    {
+      field: 'dates',
+      title: 'Dates'
+    },
+    {
+      field: 'disciplineMeeting',
+      title: 'Discipline Meeting'
+    },
+    {
+      field: 'nayVotes(%)',
+      title: 'Nay Votes (%)'
+    },
+    {
+      field: 'yayVotes(%)',
+      title: 'Yay Votes (%)'
+    },
+    {
+      field: 'abstentionVotes(%)',
+      title: 'Abstentation Votes (%)'
+    },
+    {
+      field: 'returnToLE(Y/N)',
+      title: 'Return to LE?'
+    },
+    {
+      field: 'sanctionImposed',
+      title: 'Sanctions'
+    },
+    {
+      field: 'yearsOnJob',
+      title: 'Years on Job'
+    }
+  ];
+  var data = fetch(csvUrl)
+    .then(response => response.json())
+    .then(data => {
+      $table.bootstrapTable('destroy').bootstrapTable({
+        data: data,
+        columns: columns
+      })
+    })
 
-  $table.bootstrapTable('destroy').bootstrapTable({
-    data: data,
-    height: 550,
-    locale: $('#locale').val(),
-    columns: [
-      [{
-        field: 'state',
-        checkbox: true,
-        rowspan: 2,
-        align: 'center',
-        valign: 'middle'
-      }, {
-        title: 'Item ID',
-        field: 'id',
-        rowspan: 2,
-        align: 'center',
-        valign: 'middle',
-        sortable: true,
-        footerFormatter: totalTextFormatter
-      }, {
-        title: 'Item Detail',
-        colspan: 3,
-        align: 'center'
-      }],
-      [{
-        field: 'name',
-        title: 'Item Name',
-        sortable: true,
-        footerFormatter: totalNameFormatter,
-        align: 'center'
-      }, {
-        field: 'price',
-        title: 'Item Price',
-        sortable: true,
-        align: 'center',
-        footerFormatter: totalPriceFormatter
-      }, {
-        field: 'operate',
-        title: 'Item Operate',
-        align: 'center',
-        clickToSelect: false,
-        events: window.operateEvents,
-        formatter: operateFormatter
-      }]
-    ]
-  })
   $table.on('check.bs.table uncheck.bs.table ' +
     'check-all.bs.table uncheck-all.bs.table',
   function () {
