@@ -67,10 +67,13 @@ function totalPriceFormatter(data) {
 function initTable() {
   //TODO: This doesn't work. I don't know why.
   var csvUrl = "http://localhost:3000/csv";
+  var dataSource = "https://docs.google.com/spreadsheets/d/1FRonP_omhMxrO8Gp67uAEultrYdPQwk90W6LUzryP5s/gviz/tq?&tqx:out=csv";
+
   var columns = [
     {
       field: 'officerName',
-      title: 'Officer Name'
+      title: 'Officer Name',
+      sortable: true
     },
     {
       field: 'agency',
@@ -117,11 +120,13 @@ function initTable() {
       title: 'Years on Job'
     }
   ];
-  var data = fetch(csvUrl)
+
+  var data = fetch(`${csvUrl}?url=${dataSource}`)
     .then(response => response.json())
     .then(data => {
+      const cols = data.headers;
       $table.bootstrapTable('destroy').bootstrapTable({
-        data: data,
+        data: data.data,
         columns: columns
       })
     })

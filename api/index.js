@@ -1,12 +1,9 @@
 const express = require('express');
 const axios = require('axios');
-const bodyParser = require('body-parser')
 const PORT = process.env.PORT || 3000;
-const csvUrl = "https://docs.google.com/spreadsheets/d/1FRonP_omhMxrO8Gp67uAEultrYdPQwk90W6LUzryP5s/gviz/tq?&tqx:out=csv";
 
 const app = express();
 
-// app.use(bodyParser.json());
 function camelize(str) {
   return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
     return index === 0 ? word.toLowerCase() : word.toUpperCase();
@@ -15,7 +12,15 @@ function camelize(str) {
 
 app.get('/csv', async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
-  const response = await axios.get(csvUrl);
+  const url = req.query.url;
+  if (!url || !url.length) {
+    res.status(422).send({
+      error: true,
+      message: "Missing URL"
+    });
+  }
+
+  const response = await axios.get(url);
   //clean up the response from google so we can parse it
   var from = response.data.indexOf("{");
   var to   = response.data.lastIndexOf("}")+1;
@@ -34,7 +39,12 @@ app.get('/csv', async (req, res) => {
           return o;
       }, {});
   });
-  res.json(objects);
+  const data = {
+    colHeaders: json.table.cols.map(item => item.label),
+    count: objects.length,
+    data: objects
+  };
+  res.json(data);
 })
 
 app.listen(PORT, () => {
